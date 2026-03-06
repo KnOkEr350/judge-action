@@ -15,12 +15,23 @@ services:
       timeout: 5s
       retries: 15
 
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
   student-app:
     image: ${IMAGE_SOLUTION}
     environment:
       DATABASE_URL: postgresql://appuser:apppassword@db:5432/appdb
+      REDIS_URL: redis://redis:6379
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f -m 3 http://localhost:8080/ping || exit 1"]
