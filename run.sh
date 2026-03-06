@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "IMAGE_SOLUTION=${IMAGE_SOLUTION}"
+echo "IMAGE_JUDGE=${IMAGE_JUDGE}"
+
 cat > /tmp/judge-compose.yml << EOF
 services:
   db:
@@ -50,6 +53,9 @@ services:
         condition: service_healthy
 EOF
 
+echo "===== generated compose ====="
+cat /tmp/judge-compose.yml
+
 set +e
 docker compose -f /tmp/judge-compose.yml up \
   --abort-on-container-exit \
@@ -59,9 +65,9 @@ set -e
 
 echo "===== student-app logs ====="
 docker compose -f /tmp/judge-compose.yml logs student-app
-echo "===== db logs ====="
-docker compose -f /tmp/judge-compose.yml logs db
 echo "===== redis logs ====="
 docker compose -f /tmp/judge-compose.yml logs redis
+echo "===== db logs ====="
+docker compose -f /tmp/judge-compose.yml logs db
 
 exit $EXIT_CODE
