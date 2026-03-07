@@ -13,11 +13,15 @@ inputs:
 runs:
   using: 'composite'
   steps:
+
+    - name: Set global environment variables
+      shell: bash
+      run: |
+        echo "IMAGE_SOLUTION=${{ inputs.image }}" >> $GITHUB_ENV
+        echo "IMAGE_JUDGE=${{ inputs.judge_image }}" >> $GITHUB_ENV
+
     - name: Run judge
       shell: bash
-      env:
-        IMAGE_SOLUTION: ${{ inputs.image }}
-        IMAGE_JUDGE: ${{ inputs.judge_image }}
       run: |
         docker compose -f ${{ github.action_path }}/docker-compose.yml up \
           --abort-on-container-exit \
@@ -26,8 +30,5 @@ runs:
     - name: Cleanup containers
       if: always()
       shell: bash
-      env:
-        IMAGE_SOLUTION: ${{ inputs.image }}
-        IMAGE_JUDGE: ${{ inputs.judge_image }}
       run: |
         docker compose -f ${{ github.action_path }}/docker-compose.yml down -v --remove-orphans
