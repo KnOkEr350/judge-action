@@ -48,6 +48,8 @@ services:
 
   judge:
     image: ${IMAGE_JUDGE}
+    volumes:
+      - .:/app/reports
     environment:
       BASE_URL: http://student-app:8080
       ASSIGNMENT_TYPE: ${ASSIGNMENT_TYPE}
