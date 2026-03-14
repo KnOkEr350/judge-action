@@ -48,7 +48,7 @@ services:
 
   judge:
     image: ${IMAGE_JUDGE}
-    command: python runner.py
+    command: python tests/runner.py
     volumes:
       - .:/app/reports
     environment:
