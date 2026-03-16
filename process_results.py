@@ -10,6 +10,7 @@ def main():
     score = 0
     results_file = 'results.json'
 
+
     if os.path.exists(results_file):
         try:
             with open(results_file, 'r') as f:
@@ -20,23 +21,24 @@ def main():
 
     tests_array = []
 
-    if score > 0:
+
+    for i in range(score):
         tests_array.append({
-            "name": "Earned Points",
+            "name": f"Earned Point {i + 1}",
             "status": "pass",
-            "score": score,
-            "max_score": score,
-            "message": f"Successfully earned {score} points."
+            "score": 1,
+            "max_score": 1,
+            "message": "Point awarded."
         })
 
     lost_points = max_score - score
-    if lost_points > 0:
+    for i in range(lost_points):
         tests_array.append({
-            "name": "Lost Points",
+            "name": f"Lost Point {i + 1}",
             "status": "fail",
             "score": 0,
-            "max_score": lost_points,
-            "message": f"Missed {lost_points} points."
+            "max_score": 1,
+            "message": "Point missed."
         })
 
     overall_status = "pass" if score > 0 else "fail"
