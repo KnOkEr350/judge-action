@@ -5,7 +5,7 @@ import base64
 
 def main():
     assignment_type = os.getenv("ASSIGNMENT_TYPE", "basic").lower()
-    max_score = 10 if assignment_type == "basic" else 20
+    max_score = 10 if assignment_type == "basic" else 18
 
     score = 0
     results_file = 'results.json'
