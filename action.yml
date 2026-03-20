@@ -31,7 +31,12 @@ runs:
           --abort-on-container-exit \
           --exit-code-from judge
 
-    
+    - name: Extract results
+      if: always()
+      shell: bash
+      run: |
+        docker compose --project-directory $GITHUB_WORKSPACE -f ${{ github.action_path }}/docker-compose.yml cp judge:/app/results.json $GITHUB_WORKSPACE/results.json
+        
 
     - name: Process Autograding Data
       if: always()
