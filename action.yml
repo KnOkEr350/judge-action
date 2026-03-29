@@ -1,33 +1,33 @@
-name: 'Judge Action'
-description: 'Runs judge tests against a student Docker image'
+name: "Judge Action"
+description: "Runs judge tests against a student Docker image"
 
 inputs:
   image:
-    description: 'Student Docker image name'
+    description: "Student Docker image name"
     required: true
   judge_image:
-    description: 'Judge Docker image'
+    description: "Judge Docker image"
     required: false
-    default: 'knoker123/my-judge:v2'
+    default: "knoker123/my-judge:v2"
   assignment_type:
-    description: 'basic или advanced'
+    description: "basic или advanced"
     required: true
-    default: 'basic'
+    default: "basic"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Set environment variables
       shell: bash
       run: |
-        echo "IMAGE_SOLUTION=${{ inputs.image }}" >> $GITHUB_ENV
-        echo "IMAGE_JUDGE=${{ inputs.judge_image }}" >> $GITHUB_ENV
-        echo "ASSIGNMENT_TYPE=${{ inputs.assignment_type }}" >> $GITHUB_ENV
+        echo "IMAGE_SOLUTION=${{ inputs.image }}" >> "$GITHUB_ENV"
+        echo "IMAGE_JUDGE=${{ inputs.judge_image }}" >> "$GITHUB_ENV"
+        echo "ASSIGNMENT_TYPE=${{ inputs.assignment_type }}" >> "$GITHUB_ENV"
 
     - name: Execute Judge Tests
       shell: bash
       run: |
-        docker compose --project-directory $GITHUB_WORKSPACE -f ${{ github.action_path }}/docker-compose.yml up \
+        docker compose --project-directory "$GITHUB_WORKSPACE" -f "${{ github.action_path }}/docker-compose.yml" up \
           --abort-on-container-exit \
           --exit-code-from judge
 
@@ -35,20 +35,13 @@ runs:
       if: always()
       shell: bash
       run: |
-        docker compose --project-directory $GITHUB_WORKSPACE -f ${{ github.action_path }}/docker-compose.yml cp judge:/app/results.json $GITHUB_WORKSPACE/results.json
-        docker compose --project-directory $GITHUB_WORKSPACE -f ${{ github.action_path }}/docker-compose.yml cp judge:/app/report.json $GITHUB_WORKSPACE/report.json
-        
-        echo "СОДЕРЖИМОЕ REPORT.JSON:"
-        cat ./report.json || echo "Файл не найден или пуст"     
-
-    - name: Process Autograding Data
-      if: always()
-      shell: bash
-      run: |
-        python3 ${{ github.action_path }}/process_results.py
+        docker compose --project-directory "$GITHUB_WORKSPACE" -f "${{ github.action_path }}/docker-compose.yml" cp judge:/app/results.json "$GITHUB_WORKSPACE/results.json" || echo "{}" > "$GITHUB_WORKSPACE/results.json"
+        docker compose --project-directory "$GITHUB_WORKSPACE" -f "${{ github.action_path }}/docker-compose.yml" cp judge:/app/report.json "$GITHUB_WORKSPACE/report.json" || echo "{\"tests\":[]}" > "$GITHUB_WORKSPACE/report.json"
+        echo "REPORT.JSON CONTENT:"
+        cat "$GITHUB_WORKSPACE/report.json" || true
 
     - name: Cleanup containers
       if: always()
       shell: bash
       run: |
-        docker compose --project-directory $GITHUB_WORKSPACE -f ${{ github.action_path }}/docker-compose.yml down -v --remove-orphans
+        docker compose --project-directory "$GITHUB_WORKSPACE" -f "${{ github.action_path }}/docker-compose.yml" down -v --remove-orphans
